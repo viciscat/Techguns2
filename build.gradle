@@ -1,17 +1,19 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
-    }
+		mavenCentral()
+		jcenter()
+		maven { url = "https://maven.minecraftforge.net/" }
+	}
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-    }
+		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.+"
+	}
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "java"
+apply plugin: "net.minecraftforge.gradle"
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.12.2-2.0.2.0"
+version = "1.12.2-2.0.2.0-kus-edition2"
 group = "techguns" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "techguns"
 
@@ -20,17 +22,24 @@ compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
+dependencies {
+	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
+}
+
 minecraft {
-    version = "1.12.2-14.23.5.2807"
-    runDir = "run"
-    
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20180104"
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+	mappings channel: "snapshot", version: "20180104-1.12"
+
+	runs {
+		"client" {
+			workingDirectory file("./run")
+			mods { "${project.name}" { source sourceSets.main } }
+		}
+
+		"server" {
+			workingDirectory file("./run/server")
+			mods { "${project.name}" { source sourceSets.main } }
+		}
+	}
 }
 
 repositories {
@@ -40,7 +49,7 @@ repositories {
 	maven {
 		// location of the maven that hosts JEI files
 		name = "Progwml6 maven"
-		url = "http://dvs1.progwml6.com/files/maven"
+		url = "https://dvs1.progwml6.com/files/maven"
 	}
 	maven {
 		// location of a maven mirror for JEI files, as a fallback
@@ -51,14 +60,17 @@ repositories {
         name = "CurseForge"
         url = "https://minecraft.curseforge.com/api/maven/"
     }
+	maven {
+		url "https://cursemaven.com"
+	}
 	//ivy { name "com.latmod.mods"; artifactPattern "http://mods.latmod.com/[module]/[revision]/[module]-[revision](-[classifier]).[ext]" }
 	maven { 
 		name="Latmods"
-		url "https://maven.latmod.com/"
+		url "https://maven.ftb.dev/"
 	}
 	maven {
 		name = "OpenComputers"
-		url = "http://maven.cil.li/"
+		url = "https://maven.cil.li/"
 	}
 }
 dependencies {
@@ -85,42 +97,45 @@ dependencies {
 
 	//compile 'elucent:albedo:2.0-SNAPSHOT'
 	//deobfCompile 'albedo:albedo:0.1.3:deobf'
-	compile 'albedo:albedo:1.12.2:1.1.0'
-	
-	compile 'crafttweaker:CraftTweaker2:1.12:4.1.13'
+	implementation fg.deobf("curse.maven:albedo-275300:2714505")
+
+	implementation "curse.maven:crafttweaker-239197:2639477"
 	
 	//provided 'chisel:Chisel-MC1.12:0.0.14.18:api'
 	//provided 'chisel:Chisel:MC1.12:0.0.14.18'
 	
-	compile 'the-lost-cities:lostcities:1.12:2.0.12'
+	implementation fg.deobf('curse.maven:lostcities-269024:2623319')
 	
 	//compile 'com.latmod.mods:FTBLib:4.2.5:api'
-	deobfCompile "com.feed_the_beast.mods:FTBLib:5.4.0.64"
+	//deobfCompile "com.feed_the_beast.mods:FTBLib:5.4.0.64"
+	implementation fg.deobf("curse.maven:ftblib-237167:2641933")
 	
 	 // compile against the JEI API but do not include it at runtime
-	deobfProvided "mezz.jei:jei_${mc_version}:${jei_version}:api"
+	compileOnly "mezz.jei:jei_${mc_version}:${jei_version}:api"
 	// at runtime, use the full JEI jar
-	runtime "mezz.jei:jei_${mc_version}:${jei_version}"
-	
-	deobfCompile "li.cil.oc:OpenComputers:${openComputersVersion}"
+	runtimeOnly "mezz.jei:jei_${mc_version}:${jei_version}"
+
+	implementation fg.deobf("li.cil.oc:OpenComputers:${openComputersVersion}")
 }
 
 processResources {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    //inputs.property "mcversion", project.minecraft.version
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
                 
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.version//, 'mcversion':project.minecraft.version
     }
         
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+		exclude 'crafttweaker_at.cfg'
     }
 	
 	rename '(.+_at.cfg)', 'META-INF/$1'
@@ -128,7 +143,7 @@ processResources {
 
 
 jar {
-
+	exclude 'META-INF/crafttweaker_at.cfg'
 	manifest {
 		attributes 'FMLCorePlugin': "techguns.core.TechgunsFMLPlugin"
 		attributes 'FMLCorePluginContainsFMLMod': "true"

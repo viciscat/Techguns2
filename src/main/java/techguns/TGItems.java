@@ -536,9 +536,9 @@ public class TGItems implements ITGInitializer{
 		JUMPPACK = new ItemJumpPack("jumppack",4, 1000);
 		SCUBA_TANKS = new ItemScubaTanks("scubatanks", 1, 600);
 		NIGHTVISION_GOGGLES = new ItemNightVisionGoggles("nightvisiongoggles", 1, 24000);
-		JETPACK = new ItemJetpack("jetpack", 4, 5000);
+		JETPACK = new ItemJetpack("jetpack", 4, 1000);
 		TACTICAL_MASK = new ItemTacticalMask("tacticalmask", 4, 24000);	
-		ANTI_GRAV_PACK = new ItemAntiGravPack("antigravpack", 5, 12000);
+		ANTI_GRAV_PACK = new ItemAntiGravPack("antigravpack", 5, 2500);
 		
 		DOOR3x3 = new ItemTGDoor3x3<EnumDoorType>("item_door3x3",EnumDoorType.class);
 		

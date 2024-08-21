@@ -30,7 +30,7 @@ public class DeatomizerProjectile extends GenericProjectile {
 		super(worldIn, posX, posY, posZ, yaw, pitch, damage, speed, TTL, spread, dmgDropStart, dmgDropEnd, dmgMin, penetration,
 				blockdamage, firePos);
 	}
-	
+
 	public DeatomizerProjectile(World par2World, EntityLivingBase p, float damage, float speed, int TTL, float spread,
 			float dmgDropStart, float dmgDropEnd, float dmgMin, float penetration, boolean blockdamage,
 			EnumBulletFirePos firePos) {
@@ -67,10 +67,10 @@ public class DeatomizerProjectile extends GenericProjectile {
 
 		@Override
 		public DamageType getDamageType() {
-			return DamageType.ENERGY;
+			return DamageType.UNRESISTABLE;
 		}
-		
+
 	}
-	
+
 
 }
